@@ -1,16 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
-
+import os
+import random
 # -------------------- Toggle --------------------
-show_overrides = False  # set True to highlight overrides, False for clean view
+show_overrides = True #False  # set True to highlight overrides, False for clean view
 
 # -------------------- Parameters --------------------
-generations = 400
+generations = 200
 width = generations * 2 + 1
 # random rule
 rule_number = np.random.randint(0, 256)
-rule_number = 182        # <--- change this to any Wolfram rule (0–255)
+# rule_number = 31     # <--- change this to any Wolfram rule (0–255)
 
 # Initial conditions
 random_initial =  True #: random initial row; False: start with single active cell
@@ -22,14 +23,24 @@ else:
     initial_row = np.zeros(width, dtype=int)
     initial_row[width // 2] = 1
 init_desc = "random initial row" if random_initial else "single active cell"
+OUTPUT_DIR = "outputs"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Memory approach parameters
-m = 3
-flip_threshold = 2
+# how many past steps we consider when measuring volatility
+m = 10
+# let m be a random value between 2 and 12 (not using np)
+m = random.randint(2, 12)
+flip_threshold = 3
+# let flip threshold be a random value between 1 and m
+# flip_threshold = np.random.randint(1, m)
+flip_threshold = random.randint(1, m)
+
 # d = 10  # majority over last (d+1) states
 #  random d between 3 and 10
-d = np.random.randint(3, 10)
-d = 7
+# d = np.random.randint(3, 10)
+d = 3
+d = random.randint(3, 10)
 
 # -------------------- Rule helpers --------------------
 def make_rule_array(rule_number):
@@ -123,7 +134,9 @@ plt.title(f"Rule {rule_number} (baseline) — {init_desc}, {generations} generat
 plt.xlabel("Cell index")
 plt.ylabel("Generation (0 at top)")
 plt.tight_layout()
-plt.savefig(f"rule{rule_number}_baseline.png")
+plt.savefig(os.path.join(OUTPUT_DIR, f"rule{rule_number}_baseline.png"))
+# latest_baseline.png
+plt.savefig(os.path.join(OUTPUT_DIR, "latest_baseline.png"))
 
 plt.figure(figsize=(12, 10))
 plt.imshow(encoded_mem, aspect='auto', interpolation='nearest', origin='upper', vmin=vmin, vmax=vmax)
@@ -131,5 +144,5 @@ plt.title(f"Rule {rule_number} with memory (last {d+1}, m={m}, flip_th={flip_thr
 plt.xlabel("Cell index")
 plt.ylabel("Generation (0 at top)")
 plt.tight_layout()
-plt.savefig(f"rule{rule_number}_memory.png")
-plt.savefig(f"latest_memory.png")
+plt.savefig(os.path.join(OUTPUT_DIR, f"rule{rule_number}_memory.png"))
+plt.savefig(os.path.join(OUTPUT_DIR, "latest_memory.png"))

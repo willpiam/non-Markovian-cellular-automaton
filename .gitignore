@@ -1,0 +1,9 @@
+outputs/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+venv/
+.idea/
+.DS_Store
